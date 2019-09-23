@@ -1,0 +1,43 @@
+version: '3.5'
+services:
+
+    # Nginx
+    nginx:
+        container_name: mentor_cms_nginx
+        build:
+            context: ./docker/nginx
+        restart: always
+        ports:
+            - 81:8080
+            - 444:443
+        links:
+            - php
+        volumes:
+            - .:/var/www/html
+            - ./docker/nginx/letsencrypt:/etc/letsencrypt
+
+    # PHP
+    php:
+        container_name: mentor_cms_php
+        build:
+            context: ./docker/php
+        restart: always
+        volumes:
+            - .:/var/www/html
+        working_dir: /var/www/html
+
+    # Node
+    node:
+        container_name: mentor_cms_node
+        build:
+            context: ./docker/node
+        ports:
+            - 3001:3000
+        volumes:
+            - .:/var/www/html
+        working_dir: /var/www/html
+
+networks:
+    default:
+        external:
+            name: mentor_network
